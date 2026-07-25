@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAYMAX-MD Session Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{
+        /* CHANGE THIS LINE TO ADD YOUR BACKGROUND PIC */
+        background: url('/bg.jpg') no-repeat center fixed;
+        background-size: cover;
+        
+        /* Fallback if no image */
+        background-color: #0a0a0a; 
+        
+        color:white;
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px
+    }
+    /* Dark overlay so text is readable on image */
+    body::before{
+        content:'';
+        position:fixed;
+        top:0;left:0;right:0;bottom:0;
+        background: rgba(0,0,0,0.7);
+        z-index:-1;
+    }
+   .container{
+        background: rgba(17,17,17,0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(37,211,102,0.3);
+        padding:30px;
+        border-radius:20px;
+        width:100%;
+        max-width:420px;
+        text-align:center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+   .logo{font-size:50px;margin-bottom:10px}
+    h1{font-size:24px;font-weight:700;color:#25D366;margin-bottom:5px}
+    p.subtitle{color:#aaa;font-size:14px;margin-bottom:25px}
+    input{
+        width:100%;
+        padding:14px;
+        border-radius:12px;
+        border:1px solid #333;
+        background:#1a1a1a;
+        color:white;
+        font-size:16px;
+        margin-bottom:15px;
+        outline:none;
+        transition:0.3s
+    }
+    input:focus{border-color:#25D366}
+    button{
+        width:100%;
+        padding:14px;
+        border-radius:12px;
+        border:none;
+        background:linear-gradient(90deg, #25D366, #128C7E);
+        color:white;
+        font-weight:700;
+        font-size:16px;
+        cursor:pointer;
+        transition:0.3s
+    }
+    button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(37,211,102,0.4)}
+    button:disabled{opacity:0.6;cursor:not-allowed}
+   .box{
+        background:#1a1a1a;
+        padding:20px;
+        border-radius:15px;
+        margin-top:20px;
+        border:1px solid #2a2a2a;
+        text-align:left
+    }
+    #code{
+        font-size:38px;
+        letter-spacing:10px;
+        color:#25D366;
+        font-weight:700;
+        text-align:center;
+        margin:15px 0;
+        background:#0a0a0a;
+        padding:10px;
+        border-radius:10px;
+    }
+   .steps{font-size:13px;color:#ccc;line-height:1.8}
+   .loader{
+        border:4px solid #333;
+        border-top:4px solid #25D366;
+        border-radius:50%;
+        width:35px;
+        height:35px;
+        animation:spin 1s linear infinite;
+        margin:10px auto
+    }
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+   .footer{margin-top:20px;font-size:12px;color:#777}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">🤖</div>
+    <h1>BAYMAX-MD</h1>
+    <p class="subtitle">Generate Session ID with Pairing Code</p>
+
+    <input id="number" placeholder="+263 71 715 3261" type="tel">
+    <button id="btn" onclick="getPair()">Get Pairing Code</button>
+
+    <div id="result"></div>
+
+    <div class="footer">Made with ❤️ for BAYMAX-MD</div>
+</div>
+
+<script>
+async function getPair(){
+    const number = document.getElementById('number').value.trim()
+    const btn = document.getElementById('btn')
+    
+    if(!number){
+        alert('Please enter your WhatsApp number with country code')
+        return
+    }
+
+    btn.disabled = true
+    btn.innerText = "Generating..."
+    document.getElementById('result').innerHTML = '<div class="box" style="text-align:center"><div class="loader"></div>Connecting to WhatsApp...</div>'
+
+    try{
+        // For RENDER use /pair NOT /api/pair
+        const res = await fetch('/pair', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({number})
+        })
+        const data = await res.json()
+
+        if(data.code){
+            document.getElementById('result').innerHTML = `
+                <div class="box">
+                    <h2 style="text-align:center;margin-bottom:10px">Your Pairing Code</h2>
+                    <div id="code">${data.code}</div>
+                    <div class="steps">
+                        <b>Steps:</b><br>
+                        1. Open WhatsApp > Settings > Linked Devices<br>
+                        2. Tap "Link with phone number"<br>
+                        3. Enter the code above<br>
+                        4. <b>Your SESSION_ID will be sent to this WhatsApp in ~10 seconds</b>
+                    </div>
+                </div>
+            `
+        } else {
+            document.getElementById('result').innerHTML = `<div class="box" style="color:#ff4d4d;text-align:center">❌ ${data.error || 'Failed to get code'}</div>`
+        }
+    }catch(e){
+        document.getElementById('result').innerHTML = `<div class="box" style="color:#ff4d4d;text-align:center">❌ Network Error</div>`
+    }
+
+    btn.disabled = false
+    btn.innerText = "Get Pairing Code"
+}
+</script>
+</body>
+</html>
