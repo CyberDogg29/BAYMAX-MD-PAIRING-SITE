@@ -1,10 +1,26 @@
 {
-  "name": "baymax-pair",
+  "name": "baymax-md-pairing-site",
   "version": "1.0.0",
-  "main": "server.js",
-  "scripts": { "start": "node server.js" },
+  "description": "BAYMAX-MD WhatsApp Bot Pairing Website - Generates SESSION_ID via pairing code",
+  "main": "api/pair.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "baymax",
+    "whatsapp",
+    "bot",
+    "baileys",
+    "pairing"
+  ],
+  "author": "CyberDogg29",
+  "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.11",
-    "express": "^4.18.2"
+    "pino": "^8.19.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
